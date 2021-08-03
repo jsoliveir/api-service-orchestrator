@@ -9,7 +9,7 @@ import requests as request
 import logging
 
 
-class WorkflowStep(dict):
+class WorkflowStep:
     def __init__(self, specs : dict):
         self._specs = specs
         self.name = specs['name']
@@ -63,7 +63,7 @@ class WorkflowStepRequest(WorkflowStep):
             if self._specs['request'].get('delete'):
                 output = await loop.run_in_executor(None,lambda: request.delete(**kargs))
             
-            self.result = type("Object", (), { 
+            self.result = type("Workflow.Step.Result", (), { 
                 'code': output.status_code, 
                 'headers': dict(output.headers),
                 'content':output.content.decode('utf-8').strip()
@@ -95,7 +95,7 @@ class WorkflowStepCmd(WorkflowStep):
                 stdout, stderr = await asyncio.wait_for(process.communicate(), timeout)
 
                 result.append(
-                    type("Object", (), {
+                    type("Workflow.Step.Result", (), {
                     'exit': process.returncode, 
                     'stdout': stdout.decode("utf-8").strip() if stdout  else None, 
                     "stderr": stderr.decode("utf-8").strip() if stderr  else None

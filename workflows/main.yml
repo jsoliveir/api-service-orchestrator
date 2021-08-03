@@ -1,11 +1,10 @@
 workflow:
   name: weather
-  trigger:
-      http:
-        path: /${{ workflow.name }}
-        verbs: [ 'get' ]
+  http:
+    path: /${{ workflow.name }}
+    verbs: [ 'get' ]
+
   steps:
-    
     - name: Date
       async: true
       cmd:
@@ -21,3 +20,4 @@ workflow:
       result: 
         - ${{ workflow.steps[0].result.stdout }}
         - ${{ workflow.steps[1].result.content }}
+        - ${{ workflow.http.path }}

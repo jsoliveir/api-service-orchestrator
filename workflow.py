@@ -1,31 +1,26 @@
 from expessions import Expression
-from utils import serializable
-from requests.api import get
 from steps import WorkflowStep
-import logging
-import yaml
-import io
-import asyncio
-import time
-from datetime import datetime 
-#plugins
-import json 
-import xml.etree.ElementTree
+from utils import serializable
 from dict2xml import dict2xml
+from datetime import datetime 
+import xml.etree.ElementTree
+import asyncio
+import logging
+import json 
+import yaml
+import time
+import io
 
 class Workflow:
     def __init__(self,file):
         with io.open(file, 'r') as stream:
-            workflow = yaml.safe_load(stream)['workflow']
+             self._specs = yaml.safe_load(stream)['workflow']
             
-        self.name = Expression.eval(workflow["name"],{'workflow':self})
-
-        self._specs = workflow
-        self._specs["trigger"] = Expression.eval(workflow.get("trigger"),{'workflow':self}) 
-
+        self.name = Expression.eval(self._specs["name"],{'workflow':self})
+        self.http = type('Workflow.Http',(),Expression.eval(self._specs["http"],{'workflow':self}))
         self.steps =  [ 
             WorkflowStep.create(s)
-            for s in workflow["steps"] 
+            for s in self._specs["steps"] 
         ]
 
     async def run(self,ctx) -> dict:

@@ -16,9 +16,9 @@ workflows = [ Workflow(file) for file in glob.iglob('workflows/*.yml',recursive=
 async def trigger_http(route):
     response = Response()
     try:
-        for workflow in filter(lambda w: w._specs.get('trigger').get("http"), workflows):
-            if request.path.lower() in workflow._specs["trigger"]["http"].get("path",[]):
-                if request.method.lower() in workflow._specs["trigger"]["http"].get("verbs",[]):
+        for workflow in filter(lambda w: w.http, workflows):
+            if request.path.lower() in workflow.http.path:
+                if request.method.lower() in workflow.http.verbs:
                     response.headers["Content-Type"]  = "application/json"
                     result = await workflow.run(request)
                     response.data = json.dumps(result)
