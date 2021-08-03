@@ -42,9 +42,9 @@ workflow:
         - ${{ workflow.steps[1].result.content }}
 ```
 
-The curly braces `${{ ... }}` allow you to run small `python` scripts. It is very usefull when it comes to playing with data transformation and formating the output result.
+The curly braces `${{ ... }}` allow you to run small python scripts. It is very useful when it comes to playing with data transformation and formatting the output result.
 
-The content in the curly braces runs within a `context` where you can find variables and functions for manipulating data.
+The content of the curly braces runs within a `context` where you can find variables and functions for manipulating data.
 
 Example:
 
@@ -65,7 +65,7 @@ Example:
   >${{ workflow.steps[0].name }}
 
 
-## List of builtin functions and variables**
+## **List of builtin functions and variables**
 
 ### **variables**
 
