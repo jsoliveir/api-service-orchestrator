@@ -11,6 +11,7 @@ from datetime import datetime
 #plugins
 import json 
 import xml.etree.ElementTree
+from dict2xml import dict2xml
 
 class Workflow:
     def __init__(self,file):
@@ -32,25 +33,25 @@ class Workflow:
             print("workflow:",self.name)
             context = {"workflow": self}
             if hasattr(ctx,"url"):
-                context["url"]=ctx.url
-                context["host"]=ctx.host
-                context["scheme"]=ctx.scheme
-                context["path"]=ctx.full_path
-                context["headers"]= dict(ctx.headers)
-                context["data"]=ctx.data.decode('utf-8')
+                context["http"]= {
+                    'url':ctx.url,
+                    'host': ctx.host,
+                    'scheme':ctx.scheme,
+                    'path':ctx.full_path,
+                    'headers':dict(ctx.headers),
+                    'data':ctx.data.decode('utf-8')
+                }
             else:
                 context = {**context, **ctx}
             
             context = {
                 **context,
                 "datetime": datetime,
-                # expression functions
                 "time": time,
-                "asyncio": asyncio,
-                "tojson" : json.dumps,
                 "fromjson" : json.loads,
                 "serializable" : serializable,
-                "toxml" : xml.etree.ElementTree.tostring,
+                "tojson" : lambda o: json.dumps(serializable(o)),
+                "toxml" : lambda o: dict2xml(serializable(o)),
                 "fromxml": xml.etree.ElementTree.fromstring
             }
 
