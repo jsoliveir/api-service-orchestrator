@@ -1,0 +1,36 @@
+workflow:
+  name: test
+  trigger:
+      http:
+        path: /test
+        verbs:
+          - get
+          - post
+  steps:
+    
+    - name: Get
+      async: true
+      error: ignore
+      cmd:
+        powershell: -NoProfile -Command "Start-Sleep 5; Get-Date" 
+
+    - name: Sleep
+      async: true
+      error: ignore
+      cmd:
+        powershell: -NoProfile -Command "Start-Sleep 4;" 
+      result: ${{ workflow.steps[0].result }} 
+
+    - name: Post
+      async: true
+      result: ${{ workflow.steps[0].result }}
+      # request: 
+      #   post: http://127.0.0.1:8080
+      #   headers:
+      #     Content-Type: application/json
+      #   # data: ${ xml(this.steps[0].output.content).text }
+
+    - name: cmd
+      async: false
+      result: "OK"
+      # cmd: powershell -NoProfile -Command "echo 1"
