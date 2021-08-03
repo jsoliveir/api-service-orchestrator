@@ -7,6 +7,7 @@ class WorkflowStep:
         self._specs = specs
         self.name = specs['name']
         self.result = None
+        self.hidden = specs.get("hidden",False)
 
     @staticmethod
     def create(specs) -> dict:

@@ -33,4 +33,5 @@ async def trigger_http(route):
         response.status_code = 500
         return response
 
-app.run()
+if __name__ == "__main__":
+    app.run()   

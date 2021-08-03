@@ -61,7 +61,12 @@ class Workflow:
                     await step.run(context)
                     asynctasks.clear()
 
-            return serializable(self)
+            result = {
+                **self.__dict__,
+                "steps": [s for s in filter(lambda s: not s.hidden,self.steps)]
+            }
+
+            return serializable(result)
         except Exception as ex:
             logging.exception(ex)
             raise ex
