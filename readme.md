@@ -1,18 +1,20 @@
-# What is this repository
+# **What is the orchestrator**
 
-This repository is a simple API orchestrator written in python.
+It's a simple API written in python that runs steps configured in yaml files.
 
-The orchestrator is configured thru yaml files and each configuration is called a workflow.
+The orchestrator can run workflows. Each workflow is a separate HTTP endpoint.
 
-A Workflow is triggered thru an HTTP request to a given/configured `path` and the results captured by each step will be returned to the requester.
+When an incoming request matches with the configurations (path + verbs), the workflow steps run sequentially, mirroring the results of the data collected during the execution of the steps. 
 
-# How it works
+![](docs/result.jpg)
 
-## 1) The Workflow configuration
+# **How it works**
 
-The configuration allows to write python code within curly braces `${{ ... }}`
+## The Workflow configuration
 
-You can access all properties defined in the workflow thru the ${{ workflow }} property.
+The configuration is a yaml structure that must be placed in the `workflows/` directory
+
+A workflow file looks like the following example:
 
 ```yaml
 workflow:
@@ -40,70 +42,38 @@ workflow:
         - ${{ workflow.steps[1].result.content }}
 ```
 
-If you need to make data transformations there is some available functions like `fromjson`, `tojson` or `fromxml`,`toxml` that can be invoked thry the curly braces
-eg.: `${{ toxml(workflow) }}` 
+The curly braces `${{ ... }}` allow you to run small `python` scripts. It is very usefull when it comes to playing with data transformation and formating the output result.
 
-Check the list of available functions down below
+The content in the curly braces runs within a `context` where you can find variables and functions for manipulating data.
 
+Example:
 
-## Documentation
+* **python `fstrings`:**
+  
+  >${{ f"`{http.url}`/my-url/"} }} 
 
-```yaml
-workflow:
-  name: weather                       # just a name
-  http:
-    path: /weather                    # url path that triggers the workflow
-    verbs: [ 'get' ]                  # http verb where the workflow is listening on
+* **incomming workflow data (http post):**
 
-  steps:
+  >${{ fromjson( `http.data` ) }}
 
-    # STEP TYPE CMD
-    - name: Date                      # just a name
-      async: true                     # if true, the cmd will be async  (default is false)
-      hidden: true                    # if true, the step result will be omitted from the response  (default is false)
-      cmd:                            # the step type, use cmd to create a terminal step type
-        powershell: <arguments> 
-        /bin/sh: <arguments>
-        /bin/python: <arguments>
+* **accessing environment variables**
 
-    # STEP TYPE REQUEST
-    - name: Weather
-      async: true                    # if true, the cmd will be async (default is false)
-      hidden: true                   # if true, the step result will be omitted from the response  (default is false)
-      request:                       # the step type, use request to create an http step type
-        post: <url>                  # the http request method [get, put,post,delete]
-        data: <raw-data>             # some data use ${{ tojson()}} if you want to serialize an object
-        headers:                     # the http request headers (key-value pairs)
-            KEY: VALUE            
+  >${{ workflow.env.PATH }}
 
-    # STEP TYPE GENERIC
-    - name: Output                   # if the step type is not provided, it can be just like a simple wrapper (useful for data transformation)
-      hidden: true                   # if true, the step result will be omitted from the response  (default is false)
-      result:                         
-        - ${{ workflow.steps[0].result.stdout }}
-        - ${{ workflow.steps[1].result.content }}
+* **accessing workflow data**
 
-    - name: Output2                  
-      result:                         
-        - ${{ workflow.steps[3].result[0] }}
-```
-
-## 2) Invoking the workflow request
-
-Once the configuration is done a web server will be listening for incoming requests to `workflow.http.path` then the steps specified in the workflow will be run sequentially and the overall results will be returned to the requester.
-
-![](docs/result.jpg)
+  >${{ workflow.steps[0].name }}
 
 
-# Avalable functions in the ${{ }} context
+## List of builtin functions and variables**
 
-### *variables*
+### **variables**
 
 * `workflow` :  the current workflow configuration parsed as object
 
 * `env` :  environment variables
 
-* `http` :  the http request object 
+* `http` :  the incomming http request object (orchestrator) 
 
     >`url` : http request full url
 
@@ -126,7 +96,7 @@ Once the configuration is done a web server will be listening for incoming reque
     >https://docs.python.org/3/library/datetime.html
 
 
-### *functions*
+### **functions**
 
 * `serializable()` :      converts an object to dictionary to be serializable
 
@@ -140,3 +110,45 @@ Once the configuration is done a web server will be listening for incoming reque
 
 * `object()`            converts a dictionary to object
 
+
+## **Workflow Documentation**
+
+```yaml
+workflow:
+  name: weather                       # just a name
+  http:
+    path: /weather                    # url path that triggers the workflow
+    verbs: [ 'get' ]                  # http verb where the workflow is listening on
+
+  steps:
+
+    # STEP TYPE CMD
+    - name: Date                      # just a name
+      async: true                     # if true, the cmd will be async  (default is false)
+      hidden: true                    # if true, the step result will be omitted from the response  (default is false)
+      cmd:                            # the step type, use cmd to create a terminal step type
+        powershell: <arguments> 
+        /bin/sh: <arguments>
+        /bin/python: <arguments>
+
+    # STEP TYPE REQUEST
+    - name: Weather
+      async: true           # if true, the cmd will be async (default is false)
+      hidden: true          # omitt the step result from the response (default is false)
+      request:              # the step type, use request to create an http step type
+        post: <url>         # the http request method [get, put,post,delete]
+        data: <raw-data>    # some data use ${{ tojson()}} if you want to serialize an object
+        headers:            # the http request headers (key-value pairs)
+            KEY: VALUE    
+
+    # STEP TYPE GENERIC
+    - name: Output          # if the step type is not provided, it's just data
+      hidden: true          # omitt the step result from the response (default is false)
+      result:                
+        - ${{ workflow.steps[0].result.stdout }}
+        - ${{ workflow.steps[1].result.content }}
+
+    - name: Output2                  
+      result:                         
+        - ${{ workflow.steps[3].result[0] }}
+```
