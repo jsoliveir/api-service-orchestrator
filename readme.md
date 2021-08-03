@@ -152,3 +152,14 @@ workflow:
       result:                         
         - ${{ workflow.steps[3].result[0] }}
 ```
+
+
+# Run it on docker
+
+```
+docker build . -t orchestrator
+```
+
+```
+docker run -it -p 5001:5000 orchestrator
+```
