@@ -80,7 +80,6 @@ Once the configuration is done a web server will be listening for incoming reque
     
     >https://docs.python.org/3/library/datetime.html
 
-* ``
 
 ### *functions*
 
