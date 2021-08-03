@@ -1,7 +1,10 @@
-# What is this
+# What is this repository
 
-This repository contains an api writen in python that is able to perform orchestrations based on yaml configurations
+This repository is a simple API orchestrator written in python.
 
+The orchestrator is configured thru yaml files and each configuration is called a workflow.
+
+A Workflow is triggered thru an HTTP request to a given/configured `path` and the results captured by each step will be returned to the requester.
 
 # How it works
 
