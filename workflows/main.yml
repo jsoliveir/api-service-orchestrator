@@ -1,36 +1,23 @@
 workflow:
-  name: test
+  name: weather
   trigger:
       http:
-        path: /test
-        verbs:
-          - get
-          - post
+        path: /${{ workflow.name }}
+        verbs: [ 'get' ]
   steps:
     
-    - name: Get
+    - name: Date
       async: true
-      error: ignore
       cmd:
-        powershell: -NoProfile -Command "Start-Sleep 5; Get-Date" 
+        powershell: -NoProfile -Command "Get-Date"
 
-    - name: Sleep
+    - name: Weather
       async: true
-      error: ignore
-      cmd:
-        powershell: -NoProfile -Command "Start-Sleep 4;" 
-      result: ${{ workflow.steps[0].result }} 
+      request:
+        get: https://wttr.in/Lisbon?format=3
 
-    - name: Post
-      async: true
-      result: ${{ workflow.steps[0].result }}
-      # request: 
-      #   post: http://127.0.0.1:8080
-      #   headers:
-      #     Content-Type: application/json
-      #   # data: ${ xml(this.steps[0].output.content).text }
-
-    - name: cmd
+    - name: Weather + Date
       async: false
-      result: "OK"
-      # cmd: powershell -NoProfile -Command "echo 1"
+      result: 
+        - ${{ workflow.steps[0].result.stdout }}
+        - ${{ workflow.steps[1].result.content }}

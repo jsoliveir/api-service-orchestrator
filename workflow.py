@@ -16,9 +16,11 @@ class Workflow:
     def __init__(self,file):
         with io.open(file, 'r') as stream:
             workflow = yaml.safe_load(stream)['workflow']
-        self.name = workflow["name"]
+            
+        self.name = Expression.eval(workflow["name"],{'workflow':self})
 
         self._specs = workflow
+        self._specs["trigger"] = Expression.eval(workflow.get("trigger"),{'workflow':self}) 
 
         self.steps =  [ 
             WorkflowStep.create(s)
@@ -54,6 +56,7 @@ class Workflow:
 
             asynctasks = []
             for step in self.steps:
+                context["self"] = step
                 if step._specs.get('async'):
                     asynctasks.append(asyncio.ensure_future(step.run(context)))
                 else:

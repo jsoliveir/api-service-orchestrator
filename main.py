@@ -16,7 +16,7 @@ workflows = [ Workflow(file) for file in glob.iglob('workflows/*.yml',recursive=
 async def trigger_http(route):
     response = Response()
     try:
-        for workflow in filter(lambda w: w._specs.get("trigger").get("http"), workflows):
+        for workflow in filter(lambda w: w._specs.get('trigger').get("http"), workflows):
             if request.path.lower() in workflow._specs["trigger"]["http"].get("path",[]):
                 if request.method.lower() in workflow._specs["trigger"]["http"].get("verbs",[]):
                     response.headers["Content-Type"]  = "application/json"
