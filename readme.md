@@ -2,7 +2,7 @@
 
 It's a simple API written in python that runs steps configured in yaml files.
 
-The orchestrator can run workflows. Each workflow is a separate HTTP endpoint.
+The orchestrator runs workflows, and each workflow is like a separate HTTP endpoint.
 
 When an incoming request matches with the configurations (path + verbs), the workflow steps run sequentially, mirroring the results of the data collected during the execution of the steps. 
 
