@@ -10,46 +10,47 @@ import json
 import yaml
 import time
 import io
+import os
 
 class Workflow:
     def __init__(self,file):
         with io.open(file, 'r') as stream:
              self._specs = yaml.safe_load(stream)['workflow']
-            
-        self.name = Expression.eval(self._specs["name"],{'workflow':self})
-        self.http = type('Workflow.Http',(),Expression.eval(self._specs["http"],{'workflow':self}))
+        
+        self._context = {
+            "time": time,
+            "workflow": self,
+            "datetime": datetime,
+            "env": type('Workflow.Env',(),dict(os.environ)),           
+            "fromjson" : json.loads,
+            "serializable" : serializable,
+            "tojson" : lambda o: json.dumps(serializable(o)),
+            "toxml" : lambda o: dict2xml(serializable(o)),
+            "fromxml": xml.etree.ElementTree.fromstring,
+            "object": lambda d: type('Object',(),d)
+        }
+
+        self.vars = type('Workflow.Vars',(),Expression.eval(self._specs.get("vars",{}),self._context))
+        self.name = Expression.eval(self._specs["name"],self._context)
+        self.http = type('Workflow.Http',(),Expression.eval(self._specs["http"],self._context))
         self.steps =  [ 
             WorkflowStep.create(s)
             for s in self._specs["steps"] 
         ]
-
-    async def run(self,ctx) -> dict:
+        
+    async def run(self,http) -> dict:
         try:
-            print("workflow:",self.name)
-            context = {"workflow": self}
-            if hasattr(ctx,"url"):
-                context["http"]= {
-                    'url':ctx.url,
-                    'host': ctx.host,
-                    'scheme':ctx.scheme,
-                    'path':ctx.full_path,
-                    'headers':dict(ctx.headers),
-                    'data':ctx.data.decode('utf-8')
-                }
-            else:
-                context = {**context, **ctx}
-            
             context = {
-                **context,
-                "datetime": datetime,
-                "time": time,
-                "fromjson" : json.loads,
-                "serializable" : serializable,
-                "tojson" : lambda o: json.dumps(serializable(o)),
-                "toxml" : lambda o: dict2xml(serializable(o)),
-                "fromxml": xml.etree.ElementTree.fromstring
+                **self._context,
+                "http": {
+                    'url':http.url,
+                    'host': http.host,
+                    'scheme':http.scheme,
+                    'path':http.full_path,
+                    'headers':dict(http.headers),
+                    'data':http.data.decode('utf-8')
+                }
             }
-
             asynctasks = []
             for step in self.steps:
                 context["self"] = step

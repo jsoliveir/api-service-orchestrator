@@ -1,0 +1,10 @@
+workflow:
+  name: variables
+  http:
+    path: /${{ workflow.name }}
+    verbs: [ 'get' ]
+  vars:
+    VAR1: ${{ env }}
+  steps:
+    - name: Date
+      result: ${{ workflow.vars.VAR1.APPDATA }}

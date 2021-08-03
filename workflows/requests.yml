@@ -1,17 +1,15 @@
 workflow:
-  name: weather
+  name: requests
   http:
     path: /${{ workflow.name }}
     verbs: [ 'get' ]
 
   steps:
     - name: Date
-      async: true
       cmd:
         powershell: -NoProfile -Command "Get-Date"
 
     - name: Weather
-      async: true
       request:
         get: https://wttr.in/Lisbon?format=3
 
@@ -20,4 +18,3 @@ workflow:
       result: 
         - ${{ workflow.steps[0].result.stdout }}
         - ${{ workflow.steps[1].result.content }}
-        - ${{ workflow.http.path }}

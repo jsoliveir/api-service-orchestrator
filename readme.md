@@ -58,6 +58,8 @@ Once the configuration is done a web server will be listening for incoming reque
 
 * `workflow` :  the current workflow configuration parsed as object
 
+* `env` :  environment variables
+
 * `http` :  the http request object 
 
     >`url` : http request full url
@@ -91,4 +93,6 @@ Once the configuration is done a web server will be listening for incoming reque
 
 * `fromxml()` :           serializes an object to xml 
 
-* `toxml()`             deserializes a xml string to object
+* `toxml()`               deserializes a xml string to object
+
+* `object()`            converts a dictionary to object

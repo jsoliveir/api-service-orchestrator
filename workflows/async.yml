@@ -1,0 +1,28 @@
+workflow:
+  name: async
+  http:
+    path: /${{ workflow.name }}
+    verbs: [ 'get' ]
+
+  steps:
+    - name: Berlin
+      async: true
+      request:
+        get: https://wttr.in/Berlin?format=3
+
+    - name: Lisbon
+      async: true
+      request:
+        get: https://wttr.in/Lisbon?format=3
+    
+    - name: Bergen
+      async: true
+      request:
+        get: https://wttr.in/Bergen?format=3
+
+    - name: Results
+      async: false
+      result: 
+        - ${{ workflow.steps[0].result.content }}
+        - ${{ workflow.steps[1].result.content }}
+        - ${{ workflow.steps[2].result.content }}
