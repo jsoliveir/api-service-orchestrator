@@ -8,9 +8,7 @@ When an incoming request matches with the configurations (path + verbs), the wor
 
 ![](docs/result.jpg)
 
-# **How it works**
-
-## The Workflow configuration
+# The Workflow configuration
 
 The configuration is a yaml structure that must be placed in the `workflows/` directory
 
@@ -59,9 +57,9 @@ Example:
   >${{ workflow.steps[0].name }}
 
 
-## **List of builtin functions and variables**
+# **List of builtin functions and variables**
 
-### **variables**
+## **variables**
 
 * `workflow` :  the current workflow configuration parsed as object
 
@@ -90,7 +88,7 @@ Example:
     >https://docs.python.org/3/library/datetime.html
 
 
-### **functions**
+## **functions**
 
 * `serializable()` :      converts an object to dictionary to be serializable
 
@@ -105,7 +103,7 @@ Example:
 * `object()`            converts a dictionary to object
 
 
-## **Workflow Documentation**
+# **Workflow Documentation**
 
 ```yaml
 workflow:
