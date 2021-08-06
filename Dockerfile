@@ -12,5 +12,7 @@ COPY src/ /app/src/
 COPY .env /app/.env
 WORKDIR /app
 
+ENV WORKFLOWS_PATH=/app/workflows
+
 ENTRYPOINT ["python"]
 CMD ["-m", "flask", "run","--host","0.0.0.0"]
