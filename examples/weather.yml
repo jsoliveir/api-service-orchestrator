@@ -11,5 +11,5 @@ workflow:
 
     - name:  Datetime + Weather
       result: 
-        - ${{ str(datetime.now()) }}
+        - ${{ datetime.now() }}
         - ${{ workflow.steps[0].result.content }}

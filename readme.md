@@ -32,7 +32,7 @@ workflow:
 
     - name:  Datetime + Weather
       result: 
-        - ${{ str(datetime) }}
+        - ${{ datetime.now() }}
         - ${{ workflow.steps[1].result.content }}
 ```
 
