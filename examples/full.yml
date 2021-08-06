@@ -1,0 +1,45 @@
+workflow:
+  name:  /directories           # just a name
+  http:
+    path: ${{ workflow.name }}  # url path that triggers the workflow (eg.: /get/data )
+    verbs:                      # http verb/method of the workflow
+      - 'put' 
+      - 'get' 
+      - 'post' 
+      - 'delete' 
+
+  steps:
+
+    - name: Get Directories List         
+      hidden: true
+      cmd: 
+        powershell: -NoProfile -Command "Get-ChildItem -Directory c:\ | ConvertTo-Json"
+      result:
+        OK: ${{ True if not workflow.steps[0].result.stderr else False }}
+        STDOUT: ${{ workflow.steps[0].result.stdout }}
+
+    - name: Post the directories
+      async: true         
+      hidden: true
+      request:             
+        post: http://api.pt/directories
+        data: ${{ workflow.steps[0].result.STDOUT }}
+        headers:
+          Content-Type: application/json 
+      result:
+        OK: ${{ True if not workflow.steps[1].result.status_code == 200 else False }}
+        CODE: ${{ workflow.steps[1].result.status_code }}
+
+    - name: Log To SQL
+      hidden: true 
+      cstring: server=nordatavxl.dev.internbank.no,14301; Trusted_Connection=yes
+      sql: 
+        - SELECT '${{ workflow.steps[1].result.CODE }}'
+      result:
+        OK: ${{ True if workflow.steps[2].result else False }}
+          
+    - name: Output Status 
+      result:                
+        - Powershell Status = ${{ 'OK' if workflow.steps[0].result else 'FAIL' }}
+        - Request Status = ${{ 'OK' if workflow.steps[0].result else 'FAIL' }}
+        - Logs Status = ${{ 'OK' if workflow.steps[0].result else 'FAIL' }}

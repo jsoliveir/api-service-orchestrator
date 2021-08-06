@@ -1,0 +1,15 @@
+workflow:
+  name: http
+  http:
+    path: /${{ workflow.name }}
+    verbs: [ 'get' ]
+
+  steps:
+    - name: Get Weather (json)
+      hidden: true
+      request:
+        get: https://wttr.in/Lisboa?format=j1
+
+    - name:  Formatted Result
+      async: false
+      result: ${{ workflow.steps[0].result.content }}

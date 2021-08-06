@@ -19,10 +19,10 @@ class Expression:
                         return copy.deepcopy(obj)
                 return expression
             elif type(expression) is dict:
-                return { k: Expression.eval(expression[k],context) for k in expression.keys() }
+                return type('Object',(),{ k: Expression.eval(expression[k],context) for k in expression.keys() })
             elif hasattr(expression,"__dict__"):
                 obj = expression.__dict__
-                return { k: Expression.eval(obj[k],context) for k in obj.keys() }
+                return type('Object',(),{ k: Expression.eval(obj[k],context) for k in obj.keys() })
             else:
                 return expression
         except Exception as ex:

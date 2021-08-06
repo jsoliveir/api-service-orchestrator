@@ -10,7 +10,7 @@ class WorkflowStepSql(WorkflowStep):
         super().__init__( specs)
 
     def run_sql(self,context):
-        cstring = self._specs.get('cstring')
+        cstring = self._specs['cstring']
         drivers =  list(filter(lambda d: re.search(self._specs.get('driver',''),d) ,pyodbc.drivers()))
         print(drivers,pyodbc.drivers())
         sql = Expression.eval(self._specs.get('sql'),context)
@@ -24,8 +24,12 @@ class WorkflowStepSql(WorkflowStep):
             return [row[0] for row in cursor.fetchall()]
 
     async def run(self,context,timeout=600) -> dict:
-        loop = asyncio.get_event_loop()
-        self.result = await loop.run_in_executor(None,lambda: self.run_sql(context))
-        if self._specs.get('result'):
-            self.result = Expression.eval(self._specs.get('result'),context)
-        return self
+        try:
+            loop = asyncio.get_event_loop()
+            self.result = await loop.run_in_executor(None,lambda: self.run_sql(context))
+            if self._specs.get('result'):
+                self.result = Expression.eval(self._specs.get('result'),context)
+            return self
+        except Exception as ex:
+            self.result = Exception(repr(ex))
+            raise ex

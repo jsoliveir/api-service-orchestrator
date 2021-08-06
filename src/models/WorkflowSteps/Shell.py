@@ -7,30 +7,34 @@ class WorkflowStepShell(WorkflowStep):
         super().__init__( specs)
 
     async def run(self,context,timeout=600) -> dict:
-        cmd =  self._specs.get('cmd')
-        result = []
-        for k in cmd.keys():
-            args = Expression.eval(f"{cmd[k]}",context)
-            process = await asyncio.create_subprocess_shell(
-                f"{k} {args}",
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            stdout, stderr = await asyncio.wait_for(process.communicate(), timeout)
+        try:
+            cmd =  self._specs.get('cmd')
+            result = []
+            for k in cmd.keys():
+                args = Expression.eval(f"{cmd[k]}",context)
+                process = await asyncio.create_subprocess_shell(
+                    f"{k} {args}",
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout)
 
-            result.append(
-                type("Workflow.Step.Result", (), {
-                'exit': process.returncode, 
-                'stdout': stdout.decode("utf-8").strip() if stdout  else None, 
-                "stderr": stderr.decode("utf-8").strip() if stderr  else None
-            }))
-            
-        if len(result) == 1:
-            self.result = result[0]
-        elif len(result) > 1:
-            self.result = result
+                result.append(
+                    type("Workflow.Step.Result", (), {
+                    'code': process.returncode, 
+                    'stdout': stdout.decode("utf-8").strip() if stdout  else None, 
+                    "stderr": stderr.decode("utf-8").strip() if stderr  else None
+                }))
+                
+            if len(result) == 1:
+                self.result = result[0]
+            elif len(result) > 1:
+                self.result = result
 
-        if self._specs.get('result'):
-            self.result = Expression.eval(self._specs.get('result'),context)
-        return self
+            if self._specs.get('result'):
+                self.result = Expression.eval(self._specs.get('result'),context)
+            return self
+        except Exception as ex:
+            self.result = Exception(repr(ex))
+            raise ex
 
