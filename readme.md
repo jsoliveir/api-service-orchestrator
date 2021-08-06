@@ -160,6 +160,45 @@ workflow:
       result: ${{ workflow.steps[3].result[0] }}
 ```
 
+# The Async Steps
+
+When running async steps like in the following example, the orchestrator will not wait for the steps results to give the response.
+
+So the object `workflow.steps[:].result` will be responded as `null`
+
+```yaml
+  steps:
+    - name: Sleep 10
+      async: true
+      cmd:
+        powershell: -NoProfile -Command "Start-Sleep 10;" 
+
+    - name: Sleep 20
+      async: true
+      cmd:
+        powershell: -NoProfile -Command "Start-Sleep 20" 
+```
+
+However, if a sync step is present, the async operations will be awaited and the workflow will only continue after all the steps get completed.
+
+```yaml
+  steps:
+    - name: Sleep 10
+      async: true
+      cmd:
+        powershell: -NoProfile -Command "Start-Sleep 10;" 
+
+    - name: Sleep 20
+      async: true
+      cmd:
+        powershell: -NoProfile -Command "Start-Sleep 20;" 
+    
+    - name: Wait for async steps before continue
+      async: false          # optional 
+      result: All finished  # optional
+     
+      (...)
+```
 
 # Run it on docker
 
