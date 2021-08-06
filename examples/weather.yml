@@ -1,0 +1,15 @@
+workflow:
+  name: weather
+  http:
+    path: /weather
+    verbs: [ 'get' ]
+
+  steps:
+    - name: Get Weather
+      request:
+        get: https://wttr.in/Lisbon?format=3
+
+    - name:  Datetime + Weather
+      result: 
+        - ${{ str(datetime.now()) }}
+        - ${{ workflow.steps[0].result.content }}

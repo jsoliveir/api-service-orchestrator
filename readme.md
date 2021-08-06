@@ -16,6 +16,8 @@ The configuration is a yaml structure that must be placed in the `workflows/` di
 
 A workflow file looks like the following example:
 
+[examples/weather.yml](examples/weather.yml)
+
 ```yaml
 workflow:
   name: weather
@@ -151,8 +153,8 @@ workflow:
     - name: Output          # if the step type is not provided, it's just data
       hidden: true          # omitt the step result from the response (default is false)
       result:                
-        - ${{ workflow.steps[0].result.stdout }}
-        - ${{ workflow.steps[1].result.content }}
+        - ${{ str(datetime.now()) }}
+        - ${{ workflow.steps[0].result.content }}
 
     - name: Output2                  
       result: ${{ workflow.steps[3].result[0] }}
