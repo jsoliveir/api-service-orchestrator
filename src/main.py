@@ -1,6 +1,5 @@
 from flask import Flask, request,Response
-from threading import Thread
-from workflow import Workflow
+from models.Workflows import Workflow
 import logging
 import json
 import glob

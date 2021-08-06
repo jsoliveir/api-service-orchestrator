@@ -1,9 +1,7 @@
 from copy import Error
 from datetime import datetime
 
-
 def serializable(obj):
-    
     if type(obj) is Exception:
         ref = repr(obj)
     elif type(obj) is list:
