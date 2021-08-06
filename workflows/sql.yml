@@ -3,8 +3,6 @@ workflow:
   http:
     path: /sql
     verbs: [ 'get' ]
-  vars:
-    VAR1: ${{ env }}
   steps:
     - name: SQL
       driver: SQL Server
