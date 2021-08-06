@@ -161,5 +161,7 @@ docker build . -t orchestrator
 ```
 
 ```
-docker run -it -p 5001:5000 -v "$(PWD)/workflows:/app/workflows" orchestrator
+docker run -it -p 5000:5000 \
+  -v "$(PWD)/workflows:/app/workflows" \
+  jsoliveira/orchestrator
 ```
