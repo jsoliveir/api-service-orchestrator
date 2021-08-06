@@ -167,6 +167,7 @@ When running async steps like in the following example, the orchestrator will no
 So the object `workflow.steps[:].result` will be responded as `null`
 
 ```yaml
+  ...
   steps:
     - name: Sleep 10
       async: true
@@ -177,11 +178,13 @@ So the object `workflow.steps[:].result` will be responded as `null`
       async: true
       cmd:
         powershell: -NoProfile -Command "Start-Sleep 20" 
+  ...
 ```
 
 However, if a sync step is present, the async operations will be awaited and the workflow will only continue after all the steps get completed.
 
 ```yaml
+  ...
   steps:
     - name: Sleep 10
       async: true
@@ -197,7 +200,8 @@ However, if a sync step is present, the async operations will be awaited and the
       async: false          # optional 
       result: All finished  # optional
      
-      (...)
+    ...
+
 ```
 
 # Run it on docker
