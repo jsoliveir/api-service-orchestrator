@@ -1,0 +1,14 @@
+workflow:
+  name: SQL Server
+  http:
+    path: /sql
+    verbs: [ 'get' ]
+  vars:
+    VAR1: ${{ env }}
+  steps:
+    - name: SQL
+      driver: SQL Server
+      cstring: server=xxxx.dev.internbank.no,14301;trusted_connection=true
+      sql:
+        - select 'OK' as status
+          
