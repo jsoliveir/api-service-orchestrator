@@ -24,21 +24,13 @@ workflow:
     verbs: [ 'get' ]
 
   steps:
-    
-    - name: Date
-      async: true
-      cmd:
-        powershell: -NoProfile -Command "Get-Date"
-
-    - name: Weather
-      async: true
+    - name: Get Weather
       request:
         get: https://wttr.in/Lisbon?format=3
 
-    - name: Weather + Date
-      async: false
+    - name:  Datetime + Weather
       result: 
-        - ${{ workflow.steps[0].result.stdout }}
+        - ${{ str(datetime) }}
         - ${{ workflow.steps[1].result.content }}
 ```
 
