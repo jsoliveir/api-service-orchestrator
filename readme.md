@@ -132,7 +132,6 @@ workflow:
         python: <arguments>
 
     # STEP TYPE HTTP
-    # STEP TYPE HTTP
     - name: Weather
       async: true           # if true, the cmd will be async (default is false)
       hidden: true          # omitt the step result from the response (default is false)
