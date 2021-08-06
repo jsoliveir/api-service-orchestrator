@@ -129,7 +129,7 @@ workflow:
       cmd:                            # the step type, use cmd to create a terminal step type
         powershell: <arguments> 
         /bin/sh: <arguments>
-        /bin/python: <arguments>
+        python: <arguments>
 
     # STEP TYPE REQUEST
     - name: Weather
