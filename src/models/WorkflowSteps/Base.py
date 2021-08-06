@@ -22,7 +22,7 @@ class WorkflowStep:
                 from models.WorkflowSteps.Http import WorkflowStepHttp
                 return WorkflowStepHttp(specs)
             elif specs.get('sql'):
-                from models.WorkflowSteps.SQL import WorkflowStepSQL
-                return WorkflowStepSQL(specs)
+                from models.WorkflowSteps.Sql import WorkflowStepSql
+                return WorkflowStepSql(specs)
             else:
                 return WorkflowStep(specs)

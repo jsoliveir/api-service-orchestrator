@@ -1,18 +1,21 @@
 from models.WorkflowSteps.Base import WorkflowStep
 from modules.expessions import Expression
 import pyodbc
+import os
+import re
 
-class WorkflowStepSQL(WorkflowStep):
+class WorkflowStepSql(WorkflowStep):
     def __init__(self, specs: dict):
         super().__init__( specs)
 
     async def run(self,context,timeout=600) -> dict:
         cstring = self._specs.get('cstring')
-        driver = self._specs.get('driver','SQL Server')
-        sql = self._specs.get('sql')
-        conn = pyodbc.connect(f"Driver={{{driver}}};" + cstring)
+        drivers =  list(filter(lambda d: re.search(self._specs.get('driver',''),d) ,pyodbc.drivers()))
+        print(drivers,pyodbc.drivers())
+        sql = Expression.eval(self._specs.get('sql'),context)
+        conn = pyodbc.connect(f"Driver={{{drivers[0]}}};" + cstring)
         cursor = conn.cursor()
-        cursor.execute(Expression.eval(";".join(sql),context))
+        cursor.execute(";".join(sql))
         columns =  [ c[0] for c in cursor.description ]
         if columns[0]:
             self.result = [type('Object',(),dict(zip(columns,row))) for row in cursor.fetchall()]

@@ -115,39 +115,45 @@ Example:
 
 ```yaml
 workflow:
-  name: weather                       # just a name
+  name: <string>               # just a name
   http:
-    path: /weather                    # url path that triggers the workflow
-    verbs: [ 'get' ]                  # http verb where the workflow is listening on
+    path: <string>             # url path that triggers the workflow (eg.: /get/data )
+    verbs:                     # http verb/method of the workflow
+      - 'put' 
+      - 'get' 
+      - 'post' 
+      - 'delete' 
 
   steps:
 
     # STEP TYPE CMD
-    - name: Date                      # just a name
-      async: true                     # if true, the cmd will be async  (default is false)
-      hidden: true                    # if true, the step result will be omitted from the response  (default is false)
-      cmd:                            # the step type, use cmd to create a terminal step type
-        powershell: <arguments> 
-        /bin/sh: <arguments>
-        python: <arguments>
+    - name: <string>            # just a name
+      async: <bool>             # if true, the cmd will be async  (default is false)
+      hidden: <bool>            # if true, the step result will be omitted from the response  (default is false)
+      cmd:                      # the step type, use cmd to create a terminal step type
+        powershell: <string> 
+        /bin/sh: <string>
+        python: <string>
+        (binary): <arguments>
 
     # STEP TYPE HTTP
-    - name: Weather
-      async: true           # if true, the cmd will be async (default is false)
-      hidden: true          # omitt the step result from the response (default is false)
+    - name: <string>
+      async: <bool>         # if true, the cmd will be async (default is false)
+      hidden: <bool>        # omitt the step result from the response (default is false)
       request:              # the step type, use request to create an http step type
-        post: <url>         # the http request method [get, put,post,delete]
-        data: <raw-data>    # some data use ${{ tojson()}} if you want to serialize an object
+        post: <string>      # the http request method [get, put,post,delete] and the url
+        data: <string>      # the request body, use the plugin ${{ tojson(obj)}} if you want to serialize an object to json
         headers:            # the http request headers (key-value pairs)
-            KEY: VALUE    
+          Content-Type: <string>    
 
     # STEP TYPE SQL
-    - name: SQL
-      driver: SQL Server
-      hidden: true
-      cstring: server=nordatavxl.dev.internbank.no,14301; trusted_connection=true
-      sql:
-        - SELECT TOP 10 * FROM [Localization].[dbo].[Localizations] 
+    - name: <string>
+      driver: <string>      #optional driver according go the database engine (default is MSSQL)
+      hidden: <bool>        # omitt the step result from the response (default is false)
+      cstring: <string>
+      sql: |
+        SELECT TOP 10 * 
+          FROM [Localization].[dbo].[Localizations] 
           
     # STEP TYPE GENERIC
     - name: Output          # if the step type is not provided, it's just data
@@ -157,19 +163,16 @@ workflow:
         - ${{ workflow.steps[1].result.content }}
 
     - name: Output2                  
-      result:                         
-        - ${{ workflow.steps[3].result[0] }}
+      result: ${{ workflow.steps[3].result[0] }}
 ```
 
 
 # Run it on docker
 
-```
+```powershell
 docker build . -t orchestrator
 ```
 
-```
-docker run -it -p 5000:5000 \
-  -v "$(PWD)/workflows:/app/workflows" \
-  jsoliveira/orchestrator
+```powershell
+docker run -it -p 5000:5000 -v "$(PWD)/examples:/app/workflows"  jsoliveira/orchestrator
 ```

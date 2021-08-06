@@ -8,9 +8,9 @@ workflow:
     - name: SQL
       driver: SQL Server
       hidden: true
-      cstring: server=nordatavxl.dev.internbank.no,14301; trusted_connection=true
-      sql:
+      cstring: server=nordatavxl.dev.internbank.no,14301; Trusted_Connection=yes
+      sql: 
         - SELECT TOP 10 * FROM [Localization].[dbo].[Localizations] 
           
     - name: Powershell
-      result: ${{ workflow.steps[0].result[1].ResourceId }}
+      result: ${{ workflow.steps[0].result[1].ResourceSet }}

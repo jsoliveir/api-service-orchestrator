@@ -3,10 +3,11 @@ from models.Workflows import Workflow
 import logging
 import json
 import glob
+import os
 
 app = Flask(__name__)
 
-workflows = [ Workflow(file) for file in glob.iglob('workflows/*.yml',recursive=True) ] 
+workflows = [ Workflow(file) for file in glob.iglob(f'{os.environ.get("WORKFLOWS_PATH","workflows")}/*.yml',recursive=True) ] 
 
 @app.route('/<path:route>')
 async def trigger_http(route):
@@ -20,7 +21,7 @@ async def trigger_http(route):
                     response.data = json.dumps(result)
                     response.status_code = 200
                     return response
-        response.data = "<h1>Not Found</h1>"
+        response.data = "<h1> 404 - Workflow not found/h1>"
         response.status_code = 404
         return response
     except Exception as ex:
