@@ -4,9 +4,13 @@ workflow:
     path: /sql
     verbs: [ 'get' ]
   steps:
+
     - name: SQL
       driver: SQL Server
-      cstring: server=xxxx.dev.internbank.no,14301;trusted_connection=true
+      hidden: true
+      cstring: server=nordatavxl.dev.internbank.no,14301; trusted_connection=true
       sql:
-        - select 'OK' as status
+        - SELECT TOP 10 * FROM [Localization].[dbo].[Localizations] 
           
+    - name: Powershell
+      result: ${{ workflow.steps[0].result[1].ResourceId }}

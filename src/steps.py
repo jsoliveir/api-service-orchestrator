@@ -1,7 +1,9 @@
+from abc import abstractmethod
 from expessions import Expression
 import requests as request
 import pyodbc 
 import asyncio
+
 
 class WorkflowStep:
     def __init__(self, specs : dict):
@@ -30,7 +32,7 @@ class WorkflowStepRequest(WorkflowStep):
     def __init__(self, specs: dict):
         super().__init__(specs)
 
-    async def run(self,context,timeout=600) -> dict:      
+    async def run(self,context,timeout=600) -> dict:
         headers =   self._specs['request'].get('headers')
         loop = asyncio.get_event_loop()
         
@@ -114,7 +116,7 @@ class WorkflowStepSQL(WorkflowStep):
         cursor.execute(";".join(sql))
         columns =  [ c[0] for c in cursor.description ]
         if columns[0]:
-            self.result = [dict(zip(columns,row)) for row in cursor.fetchall()]
+            self.result = [type('Object',(),dict(zip(columns,row))) for row in cursor.fetchall()]
         else:
             self.result = [row[0] for row in cursor.fetchall()]
         return self

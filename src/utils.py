@@ -1,21 +1,26 @@
 from copy import Error
+from datetime import datetime
 
 
 def serializable(obj):
-  
-    if type(obj) is Error:
-        return repr(obj)
+    
+    if type(obj) is Exception:
+        ref = repr(obj)
     elif type(obj) is list:
-        return [serializable(v) for v in obj ]
+        ref = [serializable(v) for v in obj ]
     elif hasattr(obj,"__dict__"):
-        ref = obj.__dict__
+        ref = dict(obj.__dict__)
     elif type(obj) is dict:
         ref = obj
+    elif type(obj) is datetime:
+        ref = str(obj)
     else:
-        return obj
-
-    new={}
-    for key in list(filter(lambda k: not k.startswith("_"), ref.keys())):
-        new[key] = serializable(ref[key]) 
+        ref = obj
     
-    return new
+    if type(ref) is dict:
+        return { 
+            key :serializable(ref[key])
+            for key in list(filter(lambda k: not k.startswith("_"), ref.keys()))
+        }
+    else:
+        return ref
