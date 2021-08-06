@@ -20,7 +20,7 @@ A workflow file looks like the following example:
 workflow:
   name: weather
   http:
-    path: /${{ workflow.name }}
+    path: /weather
     verbs: [ 'get' ]
 
   steps:
