@@ -144,9 +144,10 @@ workflow:
     # STEP TYPE SQL
     - name: SQL
       driver: SQL Server
-      cstring: server=xxx.dev.com,14301;trusted_connection=true
+      hidden: true
+      cstring: server=nordatavxl.dev.internbank.no,14301; trusted_connection=true
       sql:
-        - select 'OK' as status
+        - SELECT TOP 10 * FROM [Localization].[dbo].[Localizations] 
           
     # STEP TYPE GENERIC
     - name: Output          # if the step type is not provided, it's just data
