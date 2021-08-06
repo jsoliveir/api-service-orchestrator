@@ -2,7 +2,7 @@ FROM python:rc-alpine3.14
 WORKDIR /app
 COPY src/ /app/src/
 COPY .env /app/.env
-COPY workflows/ /app/workflows/
+COPY examples/ /app/workflows/
 
 RUN pip3 install -r /app/src/requirements.txt
 
