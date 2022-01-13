@@ -1,10 +1,11 @@
 # **What is the orchestrator**
 
-It's a simple API written in python that runs steps configured in yaml files.
+It's a simple Rest API / Orchestrator.
 
-The orchestrator runs workflows, and each workflow is like a separate HTTP endpoint.
+The orchestrator runs workflows written in yaml. 
 
-When an incoming request matches with the configurations (path + verbs), the workflow steps run sequentially, mirroring the results of the data collected during the execution of the steps. 
+Each workflow serves a distinct HTTP endpoint. If an incoming request matches with the `path` + `verb` , the workflow will run the steps sequentially. 
+The data structure returned by the workflow, is the result of the data collected/produced by the steps. 
 
 ![](docs/result.jpg)
 
