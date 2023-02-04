@@ -1,6 +1,6 @@
 # **What is this...**
 
-It's a simple Rest API / Orchestrator.
+It's a simple Rest API / Orchestrator very helpful when comes to run integration tests.
 
 The orchestrator runs workflows written in yaml. 
 
